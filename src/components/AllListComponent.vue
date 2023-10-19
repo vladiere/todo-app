@@ -1,4 +1,21 @@
 <template>
+  <div class="col column">
+    <q-input
+      v-model="searchTerm"
+      clearable
+      standout="bg-accent"
+      rounded
+      dense
+      color="secondary"
+      label-color="secondary"
+      label="Search list"
+      @keykpress="searchTerm"
+    >
+      <template v-slot:append>
+        <q-icon name="mdi-magnify" />
+      </template>
+    </q-input>
+  </div>
   <div class="row justify-between items-center">
     <span class="text-h6 text-weight-bold">All Lists</span>
     <q-btn
@@ -16,7 +33,7 @@
     </div>
     <q-virtual-scroll
       v-else
-      :items="allLists"
+      :items="SearchList"
       style="height: 60vh; max-height: calc(100% - 280px)"
       v-slot="{ item, index }"
     >
@@ -63,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, ref, watch } from 'vue';
+import { defineComponent, ref, watch, computed } from 'vue';
 import { useListStore } from 'src/stores/lists-store';
 
 defineComponent({
@@ -73,6 +90,7 @@ defineComponent({
 const listsStore = useListStore();
 const allLists = ref(listsStore.getAllLists());
 const listLength = ref(listsStore.getAllLists().length);
+const searchTerm = ref('');
 
 const clearLists = () => {
   listsStore.clearLists();
@@ -86,6 +104,13 @@ const removeList = (list_id: string) => {
 const doneList = (list_id: string) => {
   listsStore.doneList(list_id);
 };
+
+const SearchList = computed(() => {
+  const query = searchTerm.value.toLowerCase();
+  return allLists.value.filter((item: any) =>
+    item.list.toLowerCase().includes(query)
+  );
+});
 
 watch(
   () => listsStore.getAllLists(),

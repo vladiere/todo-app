@@ -1,4 +1,21 @@
 <template>
+  <div class="col column">
+    <q-input
+      v-model="searchTerm"
+      clearable
+      standout="bg-accent"
+      rounded
+      dense
+      color="secondary"
+      label-color="secondary"
+      label="Search list"
+      @keykpress="searchTerm"
+    >
+      <template v-slot:append>
+        <q-icon name="mdi-magnify" />
+      </template>
+    </q-input>
+  </div>
   <span class="text-h6 text-weight-bold">Completed Lists</span>
   <q-list bordered separator class="bg-accent">
     <div v-if="doneLists.length === 0" class="colum flex flex-center">
@@ -6,11 +23,11 @@
     </div>
     <q-virtual-scroll
       v-else
-      :items="doneLists"
+      :items="SearchList"
       style="height: 60vh; max-height: calc(100% - 280px)"
       v-slot="{ item, index }"
     >
-      <q-item :key="index">
+      <q-item :key="index" v-if="item.status === 1">
         <q-item-section avatar>
           <q-icon
             color="secondary"
@@ -54,19 +71,26 @@
 
 <script setup lang="ts">
 import { useListStore } from 'src/stores/lists-store';
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 
 defineComponent({
   name: 'CompletedList',
 });
 
 const listStore = useListStore();
-
-const doneLists = computed(() => listStore.doneLists);
+const searchTerm = ref('');
+const doneLists = ref(listStore.doneLists);
 
 const removeList = (list_id: string) => {
   listStore.removeList(list_id);
 };
+
+const SearchList = computed(() => {
+  const query = searchTerm.value.toLowerCase();
+  return doneLists.value.filter((item: any) =>
+    item.list.toLowerCase().includes(query)
+  );
+});
 
 const doneList = (list_id: string) => {
   listStore.doneList(list_id);

@@ -31,22 +31,6 @@
           <span class="text-caption">Completed</span>
         </div>
       </div>
-      <div class="col column">
-        <q-input
-          v-model="searchTerm"
-          clearable
-          standout="bg-accent"
-          rounded
-          dense
-          color="secondary"
-          label-color="secondary"
-          label="Search list"
-        >
-          <template v-slot:append>
-            <q-icon name="mdi-magnify" />
-          </template>
-        </q-input>
-      </div>
       <router-view />
     </div>
 
@@ -82,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, computed, ref } from 'vue';
 import { uid } from 'quasar';
 import { useRouter } from 'vue-router';
 import { useListStore } from 'src/stores/lists-store';
@@ -95,9 +79,7 @@ defineComponent({
 const listsStore = useListStore();
 const currentDate = new Date();
 const newTodo = ref('');
-const todoLists = ref<any[]>([]);
 const router = useRouter();
-const searchTerm = ref('');
 const addList = ref(false);
 const addListError = ref({
   error: false,
@@ -133,8 +115,4 @@ const addNewListFunction = () => {
     newTodo.value = '';
   }
 };
-
-onMounted(() => {
-  todoLists.value = listsStore.getAllLists();
-});
 </script>
